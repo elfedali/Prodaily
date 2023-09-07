@@ -16,7 +16,7 @@ class Task{
   String description;
   String dueDate;
   Priority priority;
-  Status status;
+  Status status;  
 
   Task({
     required this.id,

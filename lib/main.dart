@@ -27,21 +27,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
     return MaterialApp(
-      title: 'Prodaily',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-        useMaterial3: true,
-      ),
-      initialRoute: '/task_details',
-      routes: {
-        '/': (context) =>   Home(taskProvider: taskProvider),
-        '/count_down': (context) => const CountDown(),
-        '/settings': (context) => const Settings(),
-        '/add_task': (context) => const AddTaskScreen(),
-        '/task_details': (context) => const TaskDetails(),
-      }
-    );
+        title: 'Prodaily',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => Home(taskProvider: taskProvider),
+          '/count_down': (context) => const CountDown(),
+          '/settings': (context) => const Settings(),
+          '/add_task': (context) => AddTaskScreen(taskProvider: taskProvider),
+          '/task_details': (context) => const TaskDetails(),
+        });
   }
 }
 

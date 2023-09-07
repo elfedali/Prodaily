@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prodaily/components/empty_state.dart';
 import 'package:prodaily/models/task.dart';
 import 'package:prodaily/providers/task_provider.dart';
 
@@ -14,7 +15,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    if(widget.taskProvider.tasks.isEmpty){
+    /*  if (widget.taskProvider.tasks.isEmpty) {
       widget.taskProvider.tasks.addAll(
         [
           Task(
@@ -35,11 +36,11 @@ class _HomeState extends State<Home> {
           ),
         ],
       );
-
-
-    }
+    } */
     return Scaffold(
-      appBar: AppBar(title: const Text('Prodaily'), backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: AppBar(
+        title: const Text('Prodaily'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: <Widget>[
           // add
           IconButton(
@@ -56,22 +57,51 @@ class _HomeState extends State<Home> {
               Navigator.pushNamed(context, '/settings');
             },
           ),
-
         ],
       ),
-      body: ListView.builder(
-        itemCount: widget.taskProvider.tasks.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text( widget.taskProvider.tasks[index].title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text( widget.taskProvider.tasks[index].description ),
-            trailing: Text( widget.taskProvider.tasks[index].dueDate),
-          );
-        },
-      ),
-
+      body: widget.taskProvider.tasks.isEmpty
+          ? const EmptyState()
+          : RefreshIndicator(
+              onRefresh: () async {
+                await Future.delayed(const Duration(seconds: 1));
+                setState(() {});
+              },
+              child: ListView.builder(
+                itemCount: widget.taskProvider.tasks.length,
+                itemBuilder: (BuildContext context, index) {
+                  /* return ListTile(
+                    title: Text(widget.taskProvider.tasks[index].title,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(widget.taskProvider.tasks[index].description),
+                    trailing: Text(widget.taskProvider.tasks[index].dueDate),
+                  ); */
+                  return Dismissible(
+                    key: UniqueKey(),
+                    onDismissed: (direction) =>
+                        widget.taskProvider.tasks.removeAt(index),
+                    direction: DismissDirection.endToStart,
+                    child: TodoListItem(task: widget.taskProvider.tasks[index]),
+                  );
+                },
+              ),
+            ),
     );
-
   }
+}
 
+// todo list view item
+class TodoListItem extends StatelessWidget {
+  const TodoListItem({super.key, required this.task});
+
+  final Task task;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title:
+          Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(task.description),
+      trailing: Text(task.dueDate),
+    );
+  }
 }
