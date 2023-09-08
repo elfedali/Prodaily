@@ -13,11 +13,28 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
+
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _dueDateController = TextEditingController();
-  Priority _selectedPriority = Priority.LOW;
-  Status _selectedStatus = Status.TODO;
+  TextStyle _currentTextStyle = const TextStyle();
+  @override
+  void initState() {
+    super.initState();
+    _descriptionController.addListener(_updateTextStyle);
+  }
+
+  void _updateTextStyle() {
+    setState(() {
+      _currentTextStyle = (_descriptionController.text.length > 160
+          ? Theme.of(context).textTheme.bodyLarge
+          : Theme.of(context).textTheme.titleLarge)!;
+    });
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +43,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         title: const Text(
           'New',
         ),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.background,
         // save action
 
         actions: [
@@ -37,19 +54,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               if (_formKey.currentState!.validate()) {
                 // Create a new task
                 final newTask = Task(
-                  id: widget.taskProvider.tasks.length +
-                      1, // Generate a unique ID
-                  title: _titleController.text,
+                  id: DateTime.now().millisecondsSinceEpoch,
+                  title: 'Untitled',
                   description: _descriptionController.text,
-                  dueDate: _dueDateController.text,
-                  priority: _selectedPriority,
                   status: Status.TODO,
                 );
-
-                // Add the new task to the taskProvider
                 widget.taskProvider.addInfirst(newTask);
-
-                // Navigate back to the previous screen
                 Navigator.of(context).pop();
               }
             },
@@ -57,66 +67,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  autofocus: true,
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
+        child: Column(
+          children: [
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                // I want this to be full height of the screen,
+                controller: _descriptionController,
+                autofocus: true,
+                style:
+                    _currentTextStyle, // displaySmall or bodyLarge based on the text size you I want
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  //hintText: 'Enter your description',
+                  contentPadding: EdgeInsets.all(8),
+                  border: InputBorder.none,
                 ),
-                const SizedBox(height: 20),
-                //Long text field
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _dueDateController,
-                  decoration: const InputDecoration(labelText: 'Due Date'),
-                ),
-                const SizedBox(height: 20),
-                DropdownButtonFormField<Priority>(
-                  value: _selectedPriority,
-                  items: Priority.values.map((priority) {
-                    return DropdownMenuItem<Priority>(
-                      value: priority,
-                      child: Text(priority.toString()),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPriority = value!;
-                    });
-                  },
-                ),
-                /*    DropdownButtonFormField<Status>(
-                  value: _selectedStatus,
-                  items: Status.values.map((status) {
-                    return DropdownMenuItem<Status>(
-                      value: status,
-                      child: Text(status.toString()),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedStatus = value!;
-                    });
-                  },
-                ), */
-              ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a description';
+                  }
+                  return null;
+                },
+                maxLines: null,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

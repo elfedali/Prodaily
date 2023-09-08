@@ -1,0 +1,17 @@
+// I need to create a todo list with the following features:
+// 1. Add a task
+// 2. Remove a task
+// 3. Mark a task as completed
+// 4. List all tasks
+// 5. List only completed tasks
+// 6. List only pending tasks
+// 7. Exit
+// 8. Save the tasks to a file
+
+
+Task,
+Note,
+contact,
+Use immage in the attachement
+select country and git the Holydays list
+countdown

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:prodaily/models/task.dart';
+import 'package:prodaily/providers/task_provider.dart';
 
-class TaskDetails extends StatefulWidget {
-  const TaskDetails({super.key});
+class TaskDetails extends StatelessWidget {
+  const TaskDetails({
+    super.key,
+    required this.task,
+    required this.taskProvider,
+  });
+  final Task task;
+  final TaskProvider taskProvider;
 
-  @override
-  State<TaskDetails> createState() => _TaskDetailsState();
-}
-
-class _TaskDetailsState extends State<TaskDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Task Details'), backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: AppBar(
+        title: Text(task.title),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: <Widget>[
           // edit
           IconButton(
@@ -26,20 +31,16 @@ class _TaskDetailsState extends State<TaskDetails> {
             icon: const Icon(Icons.delete),
             tooltip: 'Delete',
             onPressed: () {
-              Navigator.pushNamed(context, '/delete_task');
+              taskProvider.deleteTask(task);
+              Navigator.pop(context);
             },
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Task Details',
-            ),
-          ],
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(task.description,
+            style: Theme.of(context).textTheme.bodyLarge),
       ),
     );
   }

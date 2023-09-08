@@ -7,17 +7,10 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.abc_outlined, size: 100),
+          Text('Empty list', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 20),
-          const Text('No tasks yet'),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/add_task');
-            },
-            child: const Text('Add Task'),
-          ),
         ],
       ),
     );
